@@ -22,7 +22,7 @@ import time
 	  prog = svens-ir
 	  config = 22
 	end
-''''
+'''
 
 class wordclock_interface:
     '''
