@@ -75,8 +75,8 @@ class wordclock_interface:
         while True:
             for i in pinrange_to_listen:
 		button = lirc.nextcode()
-		if button is not None:
-                    print('Remote button ' + str(button) + ' pressed.')
+		if button is not []:
+                    print('waitForEvent: Remote button ' + str(button) + ' pressed.')
                     return button   
                 if not GPIO.input(i):
                     print('Pin ' + str(i) + ' pressed.')
@@ -91,8 +91,8 @@ class wordclock_interface:
         for _ in range(int(seconds*cps)):
             for i in pinrange_to_listen:
 		button = lirc.nextcode()
-		if button is not None:
-                    print('Remote button ' + str(button) + ' pressed.')
+		if button is not []:
+                    print('waitSecondsForEvent: Remote button ' + str(button) + ' pressed.')
                     return button  
                 if not GPIO.input(i):
                     print('Pin ' + str(i) + ' pressed.')
