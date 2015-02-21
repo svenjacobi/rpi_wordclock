@@ -1,5 +1,28 @@
 import RPi.GPIO as GPIO
+import lirc
 import time
+'''
+	File ~\.lircrc contains:
+	
+	$ cat ~/.lircrc
+	begin
+	  button = KEY_LEFT     # what button is pressed on the remote
+	  prog = svens-ir     # program to handle this command
+	  config = 17     # configs are given to program as list
+	end
+
+	begin
+	  button = KEY_RIGHT
+	  prog = svens-ir
+	  config = 24
+	end
+
+	begin
+	  button = KEY_RETURN
+	  prog = svens-ir
+	  config = 22
+	end
+''''
 
 class wordclock_interface:
     '''
@@ -39,7 +62,10 @@ class wordclock_interface:
         Return state of a given pin
         '''
         # Return "not" since triggered GPIOs go to ground (low)
-        return not GPIO.input(pin)
+        if (pin == lirc.nextcode()):
+		return True
+	else:
+		return not GPIO.input(pin)
 
     def waitForEvent(self, pinrange_to_listen, cps=10):
         '''
@@ -48,6 +74,10 @@ class wordclock_interface:
         '''
         while True:
             for i in pinrange_to_listen:
+		button = lirc.nextcode()
+		if button is not None:
+                    print('Remote button ' + str(button) + ' pressed.')
+                    return button   
                 if not GPIO.input(i):
                     print('Pin ' + str(i) + ' pressed.')
                     return i
@@ -60,6 +90,10 @@ class wordclock_interface:
         '''
         for _ in range(int(seconds*cps)):
             for i in pinrange_to_listen:
+		button = lirc.nextcode()
+		if button is not None:
+                    print('Remote button ' + str(button) + ' pressed.')
+                    return button  
                 if not GPIO.input(i):
                     print('Pin ' + str(i) + ' pressed.')
                     return i
@@ -87,4 +121,7 @@ class gpio_low:
         GPIO.setup(self.button_left, GPIO.IN)
         GPIO.setup(self.button_return, GPIO.IN)
         GPIO.setup(self.button_right, GPIO.IN)
+
+	#Initializations for IR-receiver using LIRC
+	sockid = lirc.init("svens-ir", blocking=False)
 
